@@ -9,6 +9,8 @@
 </p>
 <br>
 
+## Overview
+
 🔊 Real-Time Voice AI Assistant using Groq LLaMA3 + Deepgram + LangChain .
 
 This project is a real-time voice-based conversational AI assistant that integrates:
