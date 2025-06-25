@@ -68,7 +68,7 @@ Core components such as LLM (Large Language Model), STT (Speech to Text Model), 
 3. Follow the installation instructions for your platform
 4. Verify the installation by opening a terminal/command prompt and typing:
    ```bash
-   ffmpeg --version
+   ffmpeg -version
    ```
    If FFmpeg is properly installed, you should see version information displayed.
 
