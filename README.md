@@ -35,7 +35,7 @@ Core components such as LLM (Large Language Model), STT (Speech to Text Model), 
 
 **Option A: Using VS Code Terminal**
 1. Open Visual Studio Code
-2. Open a new terminal (Terminal → New Terminal or `Ctrl+Shift+P` )
+2. Open a new terminal (Terminal → New Terminal or `Ctrl+Shift+`` )
 3. Navigate to your desired directory:
    ```bash
    cd path/to/your/desired/folder
