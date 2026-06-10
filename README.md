@@ -198,6 +198,31 @@ Voice-Chat-Bot/
 4. Add tests if applicable
 5. Submit a pull request
 
+## 60db Provider (alongside Deepgram)
+
+This fork adds [60db](https://docs.60db.ai) as a peer of Deepgram for both TTS and STT. Each service has an independent env switch and defaults preserve the Deepgram + Groq path.
+
+| Concern | File | Switch | Endpoint |
+|---|---|---|---|
+| TTS | `sixtydb_tts.py` (`SixtyDbSpeechSynthesizer`) | `TTS_PROVIDER=sixtydb` + `SIXTYDB_TTS_TRANSPORT=stream\|sync\|ws` | `POST /tts-stream` (default, NDJSON mp3 chunks), `POST /tts-synthesize` (one-shot mp3), or `wss://api.60db.ai/ws/tts` (LINEAR16 PCM 24k, ffplay invoked with `-f s16le -ar 24000 -ac 1`) |
+| STT | `sixtydb_stt.py` (`SixtyDbLiveTranscriber`) | `STT_PROVIDER=sixtydb` | `wss://api.60db.ai/ws/stt` browser mode (linear PCM 16k) |
+| LLM | _no new file_ | manual edit | replace `ChatGroq(...)` in `Voice_Bot.py:113` with `ChatOpenAI(model="60db-tiny", base_url="https://api.60db.ai/v1", api_key=os.getenv("SIXTYDB_API_KEY"))` |
+
+Both 60db classes match their Deepgram counterparts' interfaces exactly (`speak(text)` and `async listen() -> str`), so `VoiceAssistant.__init__` only branches on env — no body changes elsewhere.
+
+```env
+SIXTYDB_API_KEY=sk_live_...
+TTS_PROVIDER=sixtydb
+STT_PROVIDER=sixtydb
+SIXTYDB_API_BASE=https://api.60db.ai
+SIXTYDB_TTS_VOICE_ID=fbb75ed2-975a-40c7-9e06-38e30524a9a1
+SIXTYDB_STT_LANGUAGE=en
+```
+
+Extra Python deps for the 60db path: `websockets`, `pyaudio` (already required by Deepgram's `Microphone`).
+
+Reference: [docs.60db.ai](https://docs.60db.ai).
+
 In case of any queries, please leave a message or contact me via the email provided in my profile.
 
 <p align="center">

@@ -184,9 +184,28 @@ class VoiceAssistant:
     TERMINATION_PHRASE = "goodbye"
 
     def __init__(self, config: Config):
-        self.transcriber = LiveTranscriber(config)
+        # Provider switches — each defaults to the original Deepgram/Groq
+        # path so existing setups keep working with no .env edits.
+        #   STT_PROVIDER=sixtydb → 60db /ws/stt
+        #   TTS_PROVIDER=sixtydb → 60db /tts-stream → ffplay
+        # The LLM stays on Groq here; the LLM can also be routed through
+        # 60db by editing LLMProcessor's ChatGroq to ChatOpenAI(base_url=...).
+        stt_provider = os.getenv("STT_PROVIDER", "deepgram").strip().lower()
+        tts_provider = os.getenv("TTS_PROVIDER", "deepgram").strip().lower()
+
+        if stt_provider in ("sixtydb", "60db"):
+            from sixtydb_stt import SixtyDbLiveTranscriber
+            self.transcriber = SixtyDbLiveTranscriber(config)
+        else:
+            self.transcriber = LiveTranscriber(config)
+
         self.llm_processor = LLMProcessor(config)
-        self.synthesizer = SpeechSynthesizer(config)
+
+        if tts_provider in ("sixtydb", "60db"):
+            from sixtydb_tts import SixtyDbSpeechSynthesizer
+            self.synthesizer = SixtyDbSpeechSynthesizer(config)
+        else:
+            self.synthesizer = SpeechSynthesizer(config)
 
     async def run(self):
         """The main loop for the voice assistant."""
